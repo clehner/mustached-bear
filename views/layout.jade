@@ -2,6 +2,28 @@ doctype 5
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
+    style
+        body {
+           padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.css')
   body
-    block content
+    .navbar.navbar-inverse.navbar-fixed-top
+      .navbar-inner
+        .container
+          button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand(href='#') Mustached-bear
+          .nav-collapse.collapse
+            ul.nav
+              li.active
+                a(href='#') Home
+              li
+                a(href='#about') About
+    .container
+        block content
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+    script(src='/bootstrap/js/bootstrap.js')
