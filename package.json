@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "express": "3.1.1",
-    "jade": "*"
+    "jade": "*",
+    "request": ">1.16"
   },
   "engines": {
     "node": "0.8.x"
