@@ -81,7 +81,7 @@
         if (gridblock.text) {
           //html += '<p>'+gridblock.text+'</p>';
           var p = $('<p/>');
-          p.text(gridblock.text);
+          p.html(gridblock.text);
           var div = $('<div class="overflow"/>')
           li.append(div);
           div.append(p);
