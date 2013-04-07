@@ -49,8 +49,7 @@ margin: 0;
 #tiles li h2 {
 	color: rgb(211,207,205);
 	font-size: 17px;
-	padding: 0px 10px 0px 10px;
-	margin: 0px 0px 13px 0px;
+	margin: 10px 10px 13px 10px;
 	text-transform: capitalize;
 }
 
