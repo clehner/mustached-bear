@@ -8,8 +8,13 @@ var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var tumblrAPIURL = 'http://api.tumblr.com/v2/';
 var tumblrBeforeTimestamp = 0;
 var bitlyAPIURL = 'https://api-ssl.bitly.com/v3/';
+var foursquareAPIURL = 'https://api.foursquare.com/v2/';
 
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
+
+var amounts = {
+  foursquare: 3
+};
 
 // get initial search query from URL
 var queryRe = /query=([^&]*)/;
@@ -77,6 +82,7 @@ function loadData() {
   loadEtsyData();
   loadTumblrData();
   loadBitlyData();
+  loadFoursquareData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -163,6 +169,25 @@ function loadBitlyData() {
   });
 }
 
+function loadFoursquareData() {
+  isLoading++;
+  // API does not provide page/offset/ship, so we request 50 results at once
+  // and then render them gradually.
+  $.ajax({
+    url: foursquareAPIURL + 'venues/search',
+    dataType: 'jsonp',
+    data: {
+      client_id: 'CADCUHLDLI4E1LQ4144ZI5GMMLXJRJLR22QU0PG1MC4NLZII',
+      client_secret: 'JSCQ5AYWNS5R305WNGRCD25D0TAXF1CVLCSDSQFLTJXJWBBQ',
+      query: query,
+      intent: 'global',
+      v: 20130417,
+      limit: (page+1)*amounts.foursquare
+    },
+    success: onLoadFoursquareData
+  });
+}
+
 /**
   * Receives data from an API
   */
@@ -236,12 +261,29 @@ function onLoadTumblrData(data) {
 
 function onLoadBitlyData(response) {
   var items = response.data.results.map(function (result) {
-    console.log(result);
     return {
       id: result.aggregate_link,
       url: result.url,
       title: result.summaryTitle,
       text: result.summaryText
+    };
+  });
+  addItems(items);
+}
+
+function onLoadFoursquareData(data) {
+  if (!data || !data.meta || data.meta.code != 200) {
+    addItems([]);
+    return;
+  }
+  var items = data.response.venues.slice(-amounts.foursquare).map(function (venue) {
+    var category = venue.categories && venue.categories[0];
+    var icon = category && category.icon;
+    return {
+      id: venue.id,
+      title: venue.name,
+      url: venue.canonicalUrl,
+      image: icon && (icon.prefix + '88' + icon.suffix)
     };
   });
   addItems(items);
