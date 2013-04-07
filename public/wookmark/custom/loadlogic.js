@@ -7,6 +7,7 @@ var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var tumblrAPIURL = 'http://api.tumblr.com/v2/';
 var tumblrBeforeTimestamp = 0;
+var bitlyAPIURL = 'https://api-ssl.bitly.com/v3/';
 
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
@@ -75,6 +76,7 @@ function loadData() {
   loadParselyData();
   loadEtsyData();
   loadTumblrData();
+  loadBitlyData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -144,6 +146,23 @@ function loadTumblrData() {
   });
 }
 
+function loadBitlyData() {
+  isLoading++;
+  var num = 3;
+  $.ajax({
+    url: bitlyAPIURL + 'search',
+    dataType: 'jsonp',
+    data: {
+      access_token: 'db9a6bed0293e5f63bcbf1b87e7c3c25d106db10',
+      query: query,
+      limit: num,
+      offset: page*num,
+      fields: 'id,url,summaryText,summaryTitle,aggregate_link'
+    },
+    success: onLoadBitlyData
+  });
+}
+
 /**
   * Receives data from an API
   */
@@ -152,9 +171,6 @@ function onLoadNYTData(data) {
   addItems(data);
 }
 
-/**
-  * Receives data from parsely API
-  */
 function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
@@ -188,15 +204,11 @@ function onLoadEtsyData(data) {
   addItems(items);
 }
 
-/**
-  * Receives data from an API
-  */
 function onLoadTumblrData(data) {
   if (!data || !data.meta || data.meta.msg != 'OK') {
     addItems([]);
     return;
   }
-
   var items = data.response.map(function (post) {
     var img;
     if (post.photos) {
@@ -216,10 +228,22 @@ function onLoadTumblrData(data) {
       timestamp: post.timestamp
     };
   });
-
   // update timestamp for pagination
   if (items.length) tumblrBeforeTimestamp = items[items.length-1].timestamp;
   // add items
+  addItems(items);
+}
+
+function onLoadBitlyData(response) {
+  var items = response.data.results.map(function (result) {
+    console.log(result);
+    return {
+      id: result.aggregate_link,
+      url: result.url,
+      title: result.summaryTitle,
+      text: result.summaryText
+    };
+  });
   addItems(items);
 }
 
