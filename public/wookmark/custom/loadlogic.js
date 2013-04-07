@@ -76,26 +76,29 @@
       for(; i<length; i++) {
         gridblock = data[i];
         var li = $('<li/>');
+        var a = $('<a/>');
+        a.attr('href', gridblock.url);
+        li.append(a);
 
         if (gridblock.image) {
           var img = new Image();
           img.src = gridblock.image;
           img.width = 280;
           img.height = Math.round(gridblock.height/gridblock.width*280);
-          li.append(img);
+          a.append(img);
         }
 
         if (gridblock.title) {
-          var h2 = $('<h2/>').text(gridblock.title);
-          li.append(h2);
+          var h2 = $('<h2/>').html(gridblock.title);
+          a.append(h2);
         }
 
         if (gridblock.text) {
           var p = $('<p/>');
           p.html(gridblock.text);
           var div = $('<div class="overflow"/>');
-          li.append(div);
           div.append(p);
+          a.append(div);
         }
 
         // Add image HTML to the page.

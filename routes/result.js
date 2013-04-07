@@ -47,8 +47,9 @@ function getArticles(query, page, cb) {
 
           return {
             id: doc._id,
-            title: doc.section_name,
+            title: doc.headline.print_headline,
             text: doc.snippet,
+            url: doc.web_url,
             image: '//nytimes.com/' + image.url,
             width: image.width,
             height: image.height

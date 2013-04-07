@@ -23,6 +23,10 @@ margin: 0;
 	cursor: pointer;
 }
 
+#tiles a {
+  text-decoration: none;
+}
+
 #tiles li img {
 	display: block;
 	margin: 10px 10px 10px 10px;
