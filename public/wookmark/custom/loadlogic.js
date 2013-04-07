@@ -5,6 +5,10 @@ var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
 var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
+var tumblrAPIURL = 'http://api.tumblr.com/v2/';
+var tumblrBeforeTimestamp = 0;
+var bitlyAPIURL = 'https://api-ssl.bitly.com/v3/';
+
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
 // get initial search query from URL
@@ -60,6 +64,7 @@ function applyLayout() {
   */
 function clearData() {
   page = 0;
+  tumblrBeforeTimestamp = 0;
   $('#tiles').empty();
 }
 
@@ -70,6 +75,8 @@ function loadData() {
   loadNYTData();
   loadParselyData();
   loadEtsyData();
+  loadTumblrData();
+  loadBitlyData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -96,7 +103,7 @@ function loadParselyData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
-      limit: 5,
+      limit: 3,
       page: page+1
     },
     success: onLoadParselyData
@@ -124,6 +131,38 @@ function loadEtsyData() {
   });
 }
 
+function loadTumblrData() {
+  isLoading++;
+  $.ajax({
+    url: tumblrAPIURL + 'tagged',
+    dataType: 'jsonp',
+    data: {
+      api_key: 'zugEBprGJG0o3XRNDfZkVmaOYO3pLNtiOkiEmHncixdHrFdAFu',
+      tag: query,
+      limit: 5,
+      before: tumblrBeforeTimestamp
+    },
+    success: onLoadTumblrData
+  });
+}
+
+function loadBitlyData() {
+  isLoading++;
+  var num = 3;
+  $.ajax({
+    url: bitlyAPIURL + 'search',
+    dataType: 'jsonp',
+    data: {
+      access_token: 'db9a6bed0293e5f63bcbf1b87e7c3c25d106db10',
+      query: query,
+      limit: num,
+      offset: page*num,
+      fields: 'id,url,summaryText,summaryTitle,aggregate_link'
+    },
+    success: onLoadBitlyData
+  });
+}
+
 /**
   * Receives data from an API
   */
@@ -132,9 +171,6 @@ function onLoadNYTData(data) {
   addItems(data);
 }
 
-/**
-  * Receives data from parsely API
-  */
 function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
@@ -167,6 +203,50 @@ function onLoadEtsyData(data) {
   });
   addItems(items);
 }
+
+function onLoadTumblrData(data) {
+  if (!data || !data.meta || data.meta.msg != 'OK') {
+    addItems([]);
+    return;
+  }
+  var items = data.response.map(function (post) {
+    var img;
+    if (post.photos) {
+      var alts = post.photos[0].alt_sizes;
+      img = alts[alts.length-4] || alts[0];
+    } else {
+      img = {url: post.image_permalink};
+    }
+    return {
+      id: post.id,
+      title: post.title,
+      url: post.post_url,
+      text: post.tags.join(', '),
+      image: img.url,
+      width: img.width,
+      height: img.height,
+      timestamp: post.timestamp
+    };
+  });
+  // update timestamp for pagination
+  if (items.length) tumblrBeforeTimestamp = items[items.length-1].timestamp;
+  // add items
+  addItems(items);
+}
+
+function onLoadBitlyData(response) {
+  var items = response.data.results.map(function (result) {
+    console.log(result);
+    return {
+      id: result.aggregate_link,
+      url: result.url,
+      title: result.summaryTitle,
+      text: result.summaryText
+    };
+  });
+  addItems(items);
+}
+
 /**
   * Receives data from some API, creates HTML for images and updates the layout
   */
