@@ -9,15 +9,17 @@ var tumblrAPIURL = 'http://api.tumblr.com/v2/';
 var tumblrBeforeTimestamp = 0;
 var bitlyAPIURL = 'https://api-ssl.bitly.com/v3/';
 var foursquareAPIURL = 'https://api.foursquare.com/v2/';
+var exfmAPIURL = 'http://ex.fm/api/v3/';
 
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
 var amounts = {
-  etsy: 5,
-  tumblr: 5,
+  etsy: 4,
+  tumblr: 4,
   parsely: 3,
   bitly: 3,
-  foursquare: 2
+  foursquare: 2,
+  exfm: 3
 };
 
 // get initial search query from URL
@@ -87,6 +89,7 @@ function loadData() {
   loadTumblrData();
   loadBitlyData();
   loadFoursquareData();
+  loadexfmData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -191,6 +194,23 @@ function loadFoursquareData() {
   });
 }
 
+function loadexfmData() {
+  // exfm requires a query to search
+  if (!query) return;
+  isLoading++;
+  // API does not provide page/offset/ship, so we request 50 results at once
+  // and then render them gradually.
+  $.ajax({
+    url: exfmAPIURL + 'song/search/' + encodeURIComponent(query),
+    dataType: 'jsonp',
+    data: {
+      start: page * amounts.exfm,
+      results: amounts.exfm
+    },
+    success: onLoadexfmData
+  });
+}
+
 /**
   * Receives data from an API
   */
@@ -287,6 +307,24 @@ function onLoadFoursquareData(data) {
       title: venue.name,
       url: venue.canonicalUrl,
       image: icon && (icon.prefix + '88' + icon.suffix)
+    };
+  });
+  addItems(items);
+}
+
+function onLoadexfmData(data) {
+  if (data.status_code != 200) {
+    addItems([]);
+    return;
+  }
+  var items = data.songs.map(function (song) {
+    return {
+      type: 'exfm',
+      id: song.id,
+      title: song.title,
+      text: song.artist + ' - ' + song.album,
+      url: song.url,
+      image: song.image.large
     };
   });
   addItems(items);
