@@ -1,0 +1,29 @@
+extends layout
+
+block head
+	link(rel='stylesheet', href='stylesheets/navbar.css')
+	link(rel='stylesheet', href='wookmark/custom/gridblockstyle.css')
+
+block content
+	#container
+		.navbar 
+			.navbar-inner 
+				.img-container
+					img(src='images/bear-icon.png')
+				.title-container
+					h1.navbar-title Mustached Bear
+				.form-container
+					form.navbar-form
+						input(type='text', maxlength='35', placeholder='Type to search')#search
+						input(type='image', src='images/searchicon.png').searchicon
+			
+		
+		#main(role='main')
+			ul#tiles
+			
+			#loader
+				#loaderCircle
+		
+	script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+	script(src='wookmark/jquery.wookmark.min.js')
+	script(src='wookmark/custom/loadlogic.js')

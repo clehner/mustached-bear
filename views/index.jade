@@ -1,4 +1,15 @@
 extends layout
 
+block head
+	link(rel='stylesheet', href='stylesheets/landingpage.css')
+
 block content
-	asfasf
+	#container
+		.top-container
+		.text-container
+			h1 Read the news with Mustached Bear.
+		.search-container
+			form.navbar-form
+				input(type='text', maxlength='35', placeholder='Type to search')#search
+				input(type='image', src='images/searchicon.png').searchicon
+		
