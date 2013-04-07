@@ -14,31 +14,94 @@
 	height: 50px;
 }
 
-.navbar-title{
+/* image */
+.img-container {
+	float: left;
+	width: 50px;
+	height: 50px;
 	margin: 0;
 	padding: 0;
+}
+
+.img-container img {
+	height: 35px;
+	width: 35px;
+	margin: 0;
+	padding: 7px;
+}
+
+/* title */
+.title-container{
+	width: 250px;
+	height: 50px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 20px 0px 20px;
 	float: left;
 }
 
-.navbar-title h1 {
-	font: 40px 'Kreon';
+.navbar-title{
+	margin: 0px 10px 0px 10px;
+	padding: 2px 0px 2px 0px;
+}
+
+h1.navbar-title {
+	font: 35px 'Kreon';
+	font-weight: bold;
+	color: #731C0A;
+	margin: 0px 0px 0px 0px;
+}
+
+h1.navbar-title:hover {
+	color: black;
+	cursor: default;
+	font-size: 37px;
+	margin: -1px 0px 0px -2px;
+}
+
+/* form */
+.form-container {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	width: 18px;
+	height: 50px;
+	float: left;
 }
 
 .navbar-form {
-	margin: 5px 0px 0px 0px;
+	margin: 2px 0px 0px 0px;
+	padding: 0;
 }
 
 .navbar-form input {
-	width: 200px;
+	background-color: transparent;
 	height: 30px;
-	font: 25px 'Kreon 300';
-	font-color
+	font-size: 25px;
+	font-family: 'Kreon';
+	font-weight: 300;
+	color: #80441F;
 	padding: 0px 0px 0px 5px;
-	margin: 0px 20px 0px 20px;
-	background-color: orange;
+	margin: 8px 20px 5px 20px;
+	outline: none;
 	border: none;
 }
 
-.navbar-form button {
-	margin: 0px 0px 0px 10px;
+.navbar-form input::-webkit-input-placeholder { /* WebKit browsers */
+    color: #C46354;
 }
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #C46354;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #C46354;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #C46354;
+}
+
+.navbar-form input:focus {
+	border: none;
+	font-weight: 400;
+	outline: none;
+	color: #BA2711;
+}
+

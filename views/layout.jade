@@ -20,10 +20,13 @@ html
 		
 			.navbar 
 				.navbar-inner 
-					h1.navbar-title Mustached Bear
-					form.navbar-form
-						input(type='text', maxlength='35', placeholder='#{title}')
-						button(type='submit', class='btn') Search
+					.img-container
+						img(src='images/bear-icon.png')
+					.title-container
+						h1.navbar-title Mustached Bear
+					.form-container
+						form.navbar-form
+							input(type='text', maxlength='35', placeholder='#{title}')
 			
 			header
 				block content
