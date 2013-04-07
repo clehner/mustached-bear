@@ -8,5 +8,8 @@ exports.index = function(req, res){
 };
 
 exports.search = function(req, res){
-  res.render('search', { title: 'mustached-bear' });
+  res.render('search', {
+    title: 'mustached-bear',
+    query: req.query.query
+  });
 };
