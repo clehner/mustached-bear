@@ -203,7 +203,7 @@ function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
     var image = doc.image_url;
-    if (!image) {
+    if (!image && doc.metadata) {
       var matches = doc.metadata.match(imageUrlRe);
       image = matches && JSON.parse(matches[1]);
     }
