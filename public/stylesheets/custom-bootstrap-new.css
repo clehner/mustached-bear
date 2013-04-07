@@ -1,0 +1,44 @@
+.navbar {
+	top: 0;
+	position: fixed;
+	right: 0;
+	left: 0;
+	background-color: orange; 
+	z-index: 1030;
+	margin: 0;
+}
+
+.navbar-inner{
+	margin: 0px 0px 0px 0px;
+	padding: 0px 10px 0px 20px;
+	height: 50px;
+}
+
+.navbar-title{
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+
+.navbar-title h1 {
+	font: 40px 'Kreon';
+}
+
+.navbar-form {
+	margin: 5px 0px 0px 0px;
+}
+
+.navbar-form input {
+	width: 200px;
+	height: 30px;
+	font: 25px 'Kreon 300';
+	font-color
+	padding: 0px 0px 0px 5px;
+	margin: 0px 20px 0px 20px;
+	background-color: orange;
+	border: none;
+}
+
+.navbar-form button {
+	margin: 0px 0px 0px 10px;
+}

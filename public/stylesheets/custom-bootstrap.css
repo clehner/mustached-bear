@@ -1,0 +1,107 @@
+.navbar-fixed-top {
+	top: 0;
+}
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+position: fixed;
+right: 0;
+left: 0;
+z-index: 1030;
+margin-bottom: 0;
+}
+
+.navbar {
+margin-bottom: 20px;
+overflow: visible;
+}
+
+.navbar-inverse .navbar-inner {
+background-color: #1b1b1b;
+Invalid property value.background-image: -moz-linear-gradient(top, #222222, #111111);
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#222222), to(#111111));
+background-image: -webkit-linear-gradient(top, #222222, #111111);
+Invalid property value.background-image: -o-linear-gradient(top, #222222, #111111);
+background-image: linear-gradient(to bottom, #222222, #111111);
+background-repeat: repeat-x;
+border-color: #252525;
+Invalid property value.filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff222222', endColorstr='#ff111111', GradientType=0);
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+-webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+Unknown property name.-moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+padding-right: 0;
+padding-left: 0;
+-webkit-border-radius: 0;
+Unknown property name.-moz-border-radius: 0;
+border-radius: 0;
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+border-width: 0 0 1px;
+}
+
+.navbar-inner {
+min-height: 40px;
+padding-right: 20px;
+padding-left: 20px;
+background-color: #fafafa;
+Invalid property value.background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+Invalid property value.background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+background-repeat: repeat-x;
+border: 1px solid #d4d4d4;
+-webkit-border-radius: 4px;
+Unknown property name.-moz-border-radius: 4px;
+border-radius: 4px;
+Invalid property value.filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+Unknown property name.-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+}
+
+.container-fluid {
+padding-right: 20px;
+padding-left: 20px;
+}
+
+.navbar-inverse .brand {
+color: #999999;
+}
+
+.navbar-inverse .brand, .navbar-inverse .nav > li > a {
+color: #999999;
+text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.navbar .brand {
+display: block;
+float: left;
+padding: 10px 20px 10px;
+margin-left: -20px;
+font-size: 20px;
+font-weight: 200;
+color: #777777;
+text-shadow: 0 1px 0 #ffffff;
+}
+
+.nav-collapse.collapse {
+height: auto;
+overflow: visible;
+}
+
+.collapse {
+position: relative;
+height: 0;
+overflow: hidden;
+-webkit-transition: height 0.35s ease;
+Unknown property name.-moz-transition: height 0.35s ease;
+Unknown property name.-o-transition: height 0.35s ease;
+transition: height 0.35s ease;
+}
