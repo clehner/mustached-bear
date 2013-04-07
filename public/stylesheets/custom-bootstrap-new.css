@@ -62,9 +62,9 @@ h1.navbar-title:hover {
 .form-container {
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
-	width: 18px;
+	width: 330px;
 	height: 50px;
-	float: left;
+	float: right;
 }
 
 .navbar-form {
@@ -72,7 +72,7 @@ h1.navbar-title:hover {
 	padding: 0;
 }
 
-.navbar-form input {
+#search {
 	background-color: transparent;
 	height: 30px;
 	font-size: 25px;
@@ -83,25 +83,34 @@ h1.navbar-title:hover {
 	margin: 8px 20px 5px 20px;
 	outline: none;
 	border: none;
+	float: left;
+	text-align: right;
 }
 
-.navbar-form input::-webkit-input-placeholder { /* WebKit browsers */
+#search::-webkit-input-placeholder { /* WebKit browsers */
     color: #C46354;
 }
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+#search:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
     color: #C46354;
 }
-::-moz-placeholder { /* Mozilla Firefox 19+ */
+#search::-moz-placeholder { /* Mozilla Firefox 19+ */
     color: #C46354;
 }
-:-ms-input-placeholder { /* Internet Explorer 10+ */
+#search:-ms-input-placeholder { /* Internet Explorer 10+ */
     color: #C46354;
 }
 
-.navbar-form input:focus {
+#search:focus {
 	border: none;
 	font-weight: 400;
 	outline: none;
 	color: #BA2711;
 }
 
+.searchicon {
+	height: 25px;
+	width: 25px;
+	margin: 11px 0 0 0;
+	padding: 0;
+	vertical-align: top;
+}
