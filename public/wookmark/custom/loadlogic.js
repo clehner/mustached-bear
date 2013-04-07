@@ -32,7 +32,7 @@ for (var i in defaultAmounts) amounts[i] = ~~defaultAmounts[i];
 var services = [];
 setServices(((window.sessionStorage && sessionStorage.mustachedBearServices) ||
   (window.localStorage && localStorage.mustachedBearServices) ||
-    'etsy tumblr parsely bitly foursquare exfm').split(' '));
+    'nyt etsy tumblr parsely bitly foursquare exfm').split(' '));
 
 function setServices(list) {
   services = list;
