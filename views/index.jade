@@ -1,10 +1,11 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}. We curate rich content from the web and serve it up to you.
-  p What are you interested in today?
+	//title is the query that the user enters
+	h1=title
+	//p Welcome to #{title}. We curate rich content from the web and serve it up to you.
+	//p What are you interested in today?
   
-  form
-      | Enter query:
-      input(type='text', name='query')
+	//form
+		| Enter query:
+		input(type='text', name='query')
