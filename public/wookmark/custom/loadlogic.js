@@ -3,13 +3,24 @@ var page = 0;
 var isLoading = 0;
 var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
-var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
+//var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var tumblrAPIURL = 'http://api.tumblr.com/v2/';
 var tumblrBeforeTimestamp = 0;
 var bitlyAPIURL = 'https://api-ssl.bitly.com/v3/';
+var foursquareAPIURL = 'https://api.foursquare.com/v2/';
+var exfmAPIURL = 'http://ex.fm/api/v3/';
 
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
+
+var amounts = {
+  etsy: 4,
+  tumblr: 4,
+  parsely: 3,
+  bitly: 3,
+  foursquare: 2,
+  exfm: 3
+};
 
 // get initial search query from URL
 var queryRe = /query=([^&]*)/;
@@ -77,6 +88,8 @@ function loadData() {
   loadEtsyData();
   loadTumblrData();
   loadBitlyData();
+  loadFoursquareData();
+  loadexfmData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -103,7 +116,7 @@ function loadParselyData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
-      limit: 3,
+      limit: amounts.parsely,
       page: page+1
     },
     success: onLoadParselyData
@@ -124,8 +137,8 @@ function loadEtsyData() {
       keywords: query,
       fields: 'listing_id,title,url',
       includes: 'Images',
-      offset: page * 5,
-      limit: 5
+      offset: page * amounts.etsy,
+      limit: amounts.etsy
     },
     success: onLoadEtsyData
   });
@@ -139,7 +152,7 @@ function loadTumblrData() {
     data: {
       api_key: 'zugEBprGJG0o3XRNDfZkVmaOYO3pLNtiOkiEmHncixdHrFdAFu',
       tag: query,
-      limit: 5,
+      limit: amounts.tumblr,
       before: tumblrBeforeTimestamp
     },
     success: onLoadTumblrData
@@ -148,18 +161,53 @@ function loadTumblrData() {
 
 function loadBitlyData() {
   isLoading++;
-  var num = 3;
   $.ajax({
     url: bitlyAPIURL + 'search',
     dataType: 'jsonp',
     data: {
       access_token: 'db9a6bed0293e5f63bcbf1b87e7c3c25d106db10',
       query: query,
-      limit: num,
-      offset: page*num,
+      limit: amounts.bitly,
+      offset: page*amounts.bitly,
       fields: 'id,url,summaryText,summaryTitle,aggregate_link'
     },
     success: onLoadBitlyData
+  });
+}
+
+function loadFoursquareData() {
+  isLoading++;
+  // API does not provide page/offset/ship, so we request 50 results at once
+  // and then render them gradually.
+  $.ajax({
+    url: foursquareAPIURL + 'venues/search',
+    dataType: 'jsonp',
+    data: {
+      client_id: 'CADCUHLDLI4E1LQ4144ZI5GMMLXJRJLR22QU0PG1MC4NLZII',
+      client_secret: 'JSCQ5AYWNS5R305WNGRCD25D0TAXF1CVLCSDSQFLTJXJWBBQ',
+      query: query,
+      intent: 'global',
+      v: 20130417,
+      limit: (page+1)*amounts.foursquare
+    },
+    success: onLoadFoursquareData
+  });
+}
+
+function loadexfmData() {
+  // exfm requires a query to search
+  if (!query) return;
+  isLoading++;
+  // API does not provide page/offset/ship, so we request 50 results at once
+  // and then render them gradually.
+  $.ajax({
+    url: exfmAPIURL + 'song/search/' + encodeURIComponent(query),
+    dataType: 'jsonp',
+    data: {
+      start: page * amounts.exfm,
+      results: amounts.exfm
+    },
+    success: onLoadexfmData
   });
 }
 
@@ -175,7 +223,7 @@ function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
     var image = doc.image_url;
-    if (!image) {
+    if (!image && doc.metadata) {
       var matches = doc.metadata.match(imageUrlRe);
       image = matches && JSON.parse(matches[1]);
     }
@@ -236,12 +284,47 @@ function onLoadTumblrData(data) {
 
 function onLoadBitlyData(response) {
   var items = response.data.results.map(function (result) {
-    console.log(result);
     return {
       id: result.aggregate_link,
       url: result.url,
       title: result.summaryTitle,
       text: result.summaryText
+    };
+  });
+  addItems(items);
+}
+
+function onLoadFoursquareData(data) {
+  if (!data || !data.meta || data.meta.code != 200) {
+    addItems([]);
+    return;
+  }
+  var items = data.response.venues.slice(-amounts.foursquare).map(function (venue) {
+    var category = venue.categories && venue.categories[0];
+    var icon = category && category.icon;
+    return {
+      id: venue.id,
+      title: venue.name,
+      url: venue.canonicalUrl,
+      image: icon && (icon.prefix + '88' + icon.suffix)
+    };
+  });
+  addItems(items);
+}
+
+function onLoadexfmData(data) {
+  if (data.status_code != 200) {
+    addItems([]);
+    return;
+  }
+  var items = data.songs.map(function (song) {
+    return {
+      type: 'exfm',
+      id: song.id,
+      title: song.title,
+      text: song.artist + ' - ' + song.album,
+      url: song.url,
+      image: song.image.large
     };
   });
   addItems(items);
