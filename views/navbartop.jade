@@ -16,7 +16,7 @@ block content
 					a(href='about')
 						h1.navbar-title Mustached Bear
 				form.navbar-form(action='search', method='get')
-					input(type='text', name='query', maxlength='35', placeholder=query, autofocus='autofocus')#search
+					input(type='text', name='query', maxlength='35', placeholder='Type to search', value=query)#search
 					button(type='submit')#search-button
 						img(src='images/searchicon.png').searchicon
 					button#config-button &#9731;
@@ -37,6 +37,6 @@ block content
 	script(src='wookmark/jquery.wookmark.min.js')
 	script(src='wookmark/custom/loadlogic.js')
 	script
-		if (!("autofocus" in document.createElement('search'))) {
-			document.getElementById('search').focus();
-		}
+		// put cursor at end of input field
+		var search = document.getElementById('search');
+		search.setSelectionRange(search.value.length, search.value.length);
