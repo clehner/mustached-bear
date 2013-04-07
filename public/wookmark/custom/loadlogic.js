@@ -1,7 +1,7 @@
     var handler = null;
-    var page = 1;
+    var page = 0;
     var isLoading = false;
-    var apiURL = 'http://www.wookmark.com/api/json/popular'
+    var apiURL = '/result';
 
     // Prepare layout options.
     var options = {
@@ -43,7 +43,7 @@
 
       $.ajax({
         url: apiURL,
-        dataType: 'jsonp',
+        dataType: 'json',
         data: {page: page}, // Page parameter to make sure we load new data
         success: onLoadData
       });
@@ -60,33 +60,36 @@
       page++;
 
       // Create HTML for the images.
-      var html = '';
       var i=0, length=data.length, gridblock;
       for(; i<length; i++) {
         gridblock = data[i];
-        html += '<li>';
-		
-		
-		if (gridblock.image) {
-			html += '<img src="'+gridblock.image+'" width="280" height="'+Math.round(gridblock.height/gridblock.width*280)+'">';
-		}
-		
-		/*
-		if (gridblock.title) {
-			//html += '<h2>'+gridblock.title+'</h2>';
-			html += '<h2>This is a very long title so it better fit or else too bad</h2>';
-		}
-		
-		if (gridblock.text) {
-			//html += '<p>'+gridblock.text+'</p>';
-			html += '<div class="overflow"><p>On a hot day in June 2004, the Pashtun tribesman was lounging inside a mud compound in South Waziristan, speaking by satellite phone to one of the many reporters who regularly interviewed him on how he had fought and humbled Pakistan\'s army in the country\'s western mountains. He asked one of his followers about the strange, metallic bird hovering above him. Less than 24 hours later, a missile tore through the compound, severing Mr. Muhammad\'s left leg and killing him and several others, including two boys, ages 10 and 16. A Pakistani military spokesman was quick to claim responsibility for the attack, saying that Pakistani forces had fired at the compound. That was a lie. <BR><BR>Mr. Muhammad and his followers had been killed by the C.I.A., the first time it had deployed a Predator drone in Pakistan to carry out a \"targeted killing.\" The target was not a top operative of Al Qaeda, but a Pakistani ally of the Taliban who led a tribal rebellion and was marked by Pakistan as an enemy of the state. In a secret deal, the C.I.A. had agreed to kill him in exchange for access to airspace it had long sought so it could use drones to hunt down its own enemies.</p></div></div>';
-		}*/
-			
-        html += '</li>';
-      }
+        var li = $('<li/>');
 
-      // Add image HTML to the page.
-      $('#tiles').append(html);
+        if (gridblock.image) {
+          var img = new Image();
+          img.src = gridblock.image;
+          img.width = 280;
+          img.height = Math.round(gridblock.height/gridblock.width*280);
+          li.append(img);
+        }
+
+        if (gridblock.title) {
+          var h2 = $('<h2/>').text(gridblock.title);
+          li.append(h2);
+        }
+
+        if (gridblock.text) {
+          //html += '<p>'+gridblock.text+'</p>';
+          var p = $('<p/>');
+          p.text(gridblock.text);
+          var div = $('<div class="overflow"/>')
+          li.append(div);
+          div.append(p);
+        }
+
+        // Add image HTML to the page.
+        $('#tiles').append(li);
+      }
 
       // Apply layout.
       applyLayout();
