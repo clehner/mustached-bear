@@ -5,8 +5,24 @@ var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
 var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
-var query = '';
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
+
+// get initial search query from URL
+var queryRe = /query=([^&]*)/;
+var query = (location.hash.match(queryRe) ||
+  location.search.match(queryRe) || 0)[1];
+
+if(history.pushState) {
+  history.pushState({query: query}, document.title, location.href);
+
+  window.onpopstate = function (e) {
+    if (e.state) {
+      query = e.state.query;
+      clearData();
+      loadData();
+    }
+  };
+}
 
 // Prepare layout options.
 var options = {
@@ -80,6 +96,7 @@ function loadParselyData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
+      limit: 5,
       page: page+1
     },
     success: onLoadParselyData
@@ -127,30 +144,12 @@ function onLoadParselyData(data) {
       image = matches && JSON.parse(matches[1]);
     }
     return {
-      id: doc.pub_date,
+      id: doc.url,
       url: doc.url,
       title: doc.title,
       image: image
     };
   });
-  var urls = items.map(function (item) { return item.image || item.url; });
-
-  // Get thumbmail urls using embedly
-  /*
-  $.ajax({
-    url: oEmbedAPIURL + '?maxwidth=280&urls=' + urls.map(escape).join(','),
-    dataType: 'jsonp',
-    success: function (embeds) {
-      embeds.forEach(function (embed, i) {
-        var item = items[i];
-        item.image = embed.thumbnail_url;
-        item.width = embed.thumbnail_width;
-        item.height = embed.thumbnail_height;
-      });
-      addItems(items);
-    }
-  });
-  */
   addItems(items);
 }
 
@@ -237,6 +236,11 @@ $(document).ready(function() {
   $('form.navbar-form').on('submit', function (e) {
     e.preventDefault();
     query = $("#search").val();
+    if (history.pushState) {
+      var newLocation = location.href.replace(queryRe,
+        'query=' + encodeURIComponent(query));
+      history.pushState({query: query}, document.title, newLocation);
+    }
     clearData();
     loadData();
   });
