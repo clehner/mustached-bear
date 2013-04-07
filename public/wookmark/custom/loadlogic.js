@@ -2,6 +2,7 @@
     var page = 0;
     var isLoading = false;
     var apiURL = '/result';
+    var query = '';
 
     // Prepare layout options.
     var options = {
@@ -23,7 +24,7 @@
           loadData();
         }
       }
-    };
+    }
 
     /**
      * Refreshes the layout.
@@ -32,7 +33,15 @@
       // Create a new layout handler.
       handler = $('#tiles li');
       handler.wookmark(options);
-    };
+    }
+
+    /**
+     * Clear the rendered data
+     */
+    function clearData() {
+      page = 0;
+      $('#tiles').empty();
+    }
 
     /**
      * Loads data from the API.
@@ -44,10 +53,13 @@
       $.ajax({
         url: apiURL,
         dataType: 'json',
-        data: {page: page}, // Page parameter to make sure we load new data
+        data: {
+          query: query,
+          page: page
+        }, // Page parameter to make sure we load new data
         success: onLoadData
       });
-    };
+    }
 
     /**
      * Receives data from the API, creates HTML for images and updates the layout
@@ -79,10 +91,9 @@
         }
 
         if (gridblock.text) {
-          //html += '<p>'+gridblock.text+'</p>';
           var p = $('<p/>');
           p.html(gridblock.text);
-          var div = $('<div class="overflow"/>')
+          var div = $('<div class="overflow"/>');
           li.append(div);
           div.append(p);
         }
@@ -93,12 +104,20 @@
 
       // Apply layout.
       applyLayout();
-    };
+    }
 
-    $(document).ready(new function() {
+    $(document).ready(function() {
       // Capture scroll event.
       $(document).bind('scroll', onScroll);
 
       // Load first data from the API.
       loadData();
+
+      // Reload results on form submit
+      $('form.navbar-form').on('submit', function (e) {
+        e.preventDefault();
+        query = $("#search").val();
+        clearData();
+        loadData();
+      });
     });

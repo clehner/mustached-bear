@@ -63,7 +63,7 @@ function getArticles(query, page, cb) {
 }
 
 exports.list = function(req, res) {
-  getArticles(req.query.q, ~~req.query.page, function (err, results) {
+  getArticles(req.query.query, ~~req.query.page, function (err, results) {
     if (err) {
       res.send([{success: false, error: err.toString()}]);
     } else {
