@@ -1,8 +1,11 @@
 var handler = null;
 var page = 0;
-var isLoading = false;
+var isLoading = 0;
 var apiURL = '/result';
+var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
+var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var query = '';
+var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
 // Prepare layout options.
 var options = {
@@ -47,7 +50,7 @@ function clearData() {
   * Loads data from the API.
   */
 function loadData() {
-  isLoading = true;
+  isLoading++;
   $('#loaderCircle').show();
 
   $.ajax({
@@ -56,26 +59,93 @@ function loadData() {
     data: {
       query: query,
       page: page
-    }, // Page parameter to make sure we load new data
+    },
     success: onLoadData
   });
+
+  isLoading++;
+  $.ajax({
+    url: parselyAPIURL,
+    dataType: 'jsonp',
+    data: {
+      apikey: 'arstechnica.com',
+      q: query,
+      page: page+1
+    },
+    success: onLoadData2
+  });
+
 }
 
 /**
-  * Receives data from the API, creates HTML for images and updates the layout
+  * Receives data from an API
   */
 function onLoadData(data) {
-  isLoading = false;
-  $('#loaderCircle').hide();
-
   // Increment page index for future calls.
   page++;
+  addItems(data);
+}
+
+/**
+  * Receives data from parsely API
+  */
+function onLoadData2(data) {
+  var items = data.data.map(function (doc) {
+    // sometimes the JSON is fail, so use a regex to get the image url
+    var image = doc.image_url;
+    if (!image) {
+      var matches = doc.metadata.match(imageUrlRe);
+      image = matches && JSON.parse(matches[1]);
+    }
+    return {
+      id: doc.pub_date,
+      url: doc.url,
+      title: doc.title,
+      image: image
+    };
+  });
+  var urls = items.map(function (item) { return item.image || item.url; });
+
+  // Get thumbmail urls using embedly
+  /*
+  $.ajax({
+    url: oEmbedAPIURL + '?maxwidth=280&urls=' + urls.map(escape).join(','),
+    dataType: 'jsonp',
+    success: function (embeds) {
+      embeds.forEach(function (embed, i) {
+        var item = items[i];
+        item.image = embed.thumbnail_url;
+        item.width = embed.thumbnail_width;
+        item.height = embed.thumbnail_height;
+      });
+      addItems(items);
+    }
+  });
+  */
+  addItems(items);
+}
+
+
+/**
+  * Receives data from some API, creates HTML for images and updates the layout
+  */
+var lisById = {};
+function addItems(data) {
+  --isLoading || $('#loaderCircle').hide();
 
   // Create HTML for the images.
   var i=0, length=data.length, gridblock;
   for(; i<length; i++) {
     gridblock = data[i];
-    var li = $('<li/>');
+    var id = gridblock.id;
+    var li;
+    if (id in lisById) {
+      li = lisById[id];
+      // already seen this one
+      $('#tiles').append(li);
+      continue;
+    }
+    lisById[id] = li = $('<li/>');
     var a = $('<a/>');
     a.attr('href', gridblock.url);
     li.append(a);
@@ -84,7 +154,12 @@ function onLoadData(data) {
       var img = new Image();
       img.src = gridblock.image;
       img.width = 280;
-      img.height = Math.round(gridblock.height/gridblock.width*280);
+      if (gridblock.height) {
+        img.height = Math.round(gridblock.height/gridblock.width*280);
+      } else {
+        // Fix the layout when the image is loaded
+        img.onload = applyLayout;
+      }
       a.append(img);
     }
 
