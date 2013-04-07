@@ -3,7 +3,7 @@ var page = 0;
 var isLoading = 0;
 var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
-var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
+//var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var tumblrAPIURL = 'http://api.tumblr.com/v2/';
 var tumblrBeforeTimestamp = 0;
@@ -13,7 +13,11 @@ var foursquareAPIURL = 'https://api.foursquare.com/v2/';
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
 var amounts = {
-  foursquare: 3
+  etsy: 5,
+  tumblr: 5,
+  parsely: 3,
+  bitly: 3,
+  foursquare: 2
 };
 
 // get initial search query from URL
@@ -109,7 +113,7 @@ function loadParselyData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
-      limit: 3,
+      limit: amounts.parsely,
       page: page+1
     },
     success: onLoadParselyData
@@ -130,8 +134,8 @@ function loadEtsyData() {
       keywords: query,
       fields: 'listing_id,title,url',
       includes: 'Images',
-      offset: page * 5,
-      limit: 5
+      offset: page * amounts.etsy,
+      limit: amounts.etsy
     },
     success: onLoadEtsyData
   });
@@ -145,7 +149,7 @@ function loadTumblrData() {
     data: {
       api_key: 'zugEBprGJG0o3XRNDfZkVmaOYO3pLNtiOkiEmHncixdHrFdAFu',
       tag: query,
-      limit: 5,
+      limit: amounts.tumblr,
       before: tumblrBeforeTimestamp
     },
     success: onLoadTumblrData
@@ -154,15 +158,14 @@ function loadTumblrData() {
 
 function loadBitlyData() {
   isLoading++;
-  var num = 3;
   $.ajax({
     url: bitlyAPIURL + 'search',
     dataType: 'jsonp',
     data: {
       access_token: 'db9a6bed0293e5f63bcbf1b87e7c3c25d106db10',
       query: query,
-      limit: num,
-      offset: page*num,
+      limit: amounts.bitly,
+      offset: page*amounts.bitly,
       fields: 'id,url,summaryText,summaryTitle,aggregate_link'
     },
     success: onLoadBitlyData
