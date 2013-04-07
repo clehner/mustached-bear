@@ -4,6 +4,7 @@ var isLoading = 0;
 var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
 var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
+var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var query = '';
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
@@ -50,9 +51,16 @@ function clearData() {
   * Loads data from the API.
   */
 function loadData() {
-  isLoading++;
-  $('#loaderCircle').show();
+  loadNYTData();
+  loadParselyData();
+  loadEtsyData();
+  page++;
 
+  if (isLoading) $('#loaderCircle').show();
+}
+
+function loadNYTData() {
+  isLoading++;
   $.ajax({
     url: apiURL,
     dataType: 'json',
@@ -60,9 +68,11 @@ function loadData() {
       query: query,
       page: page
     },
-    success: onLoadData
+    success: onLoadNYTData
   });
+}
 
+function loadParselyData() {
   isLoading++;
   $.ajax({
     url: parselyAPIURL,
@@ -72,24 +82,43 @@ function loadData() {
       q: query,
       page: page+1
     },
-    success: onLoadData2
+    success: onLoadParselyData
   });
+}
 
+function loadEtsyData() {
+  if (!query) {
+    // etsy requires a query
+    return;
+  }
+  isLoading++;
+  $.ajax({
+    url: etsyAPIURL + 'listings/active.js',
+    dataType: 'jsonp',
+    data: {
+      api_key: 'eyrvku6gczxoorsxjzwohe45',
+      keywords: query,
+      fields: 'listing_id,title,url',
+      includes: 'Images',
+      offset: page * 5,
+      limit: 5
+    },
+    success: onLoadEtsyData
+  });
 }
 
 /**
   * Receives data from an API
   */
-function onLoadData(data) {
+function onLoadNYTData(data) {
   // Increment page index for future calls.
-  page++;
   addItems(data);
 }
 
 /**
   * Receives data from parsely API
   */
-function onLoadData2(data) {
+function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
     var image = doc.image_url;
@@ -125,7 +154,20 @@ function onLoadData2(data) {
   addItems(items);
 }
 
-
+function onLoadEtsyData(data) {
+  var items = data.results.map(function (listing) {
+    var img = listing && listing.Images && listing.Images[0];
+    return {
+      id: listing.listing_id,
+      title: listing.title,
+      url: listing.url,
+      image: img.url_570xN,
+      width: img.full_width,
+      height: img.full_height
+    };
+  });
+  addItems(items);
+}
 /**
   * Receives data from some API, creates HTML for images and updates the layout
   */
