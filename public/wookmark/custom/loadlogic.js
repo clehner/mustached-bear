@@ -264,7 +264,7 @@ function onLoadParselyData(data) {
       image = matches && JSON.parse(matches[1]);
     }
     return {
-      id: doc.url,
+      id: doc.title,
       url: doc.url,
       title: doc.title,
       image: image
