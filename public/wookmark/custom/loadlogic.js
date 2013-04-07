@@ -13,7 +13,9 @@ var exfmAPIURL = 'http://ex.fm/api/v3/';
 
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
-var amounts = {
+// arbirary distribution of APIs based on quality
+var defaultAmounts = {
+  nyt: 5,
   etsy: 4,
   tumblr: 4,
   parsely: 3,
@@ -21,6 +23,35 @@ var amounts = {
   foursquare: 2,
   exfm: 3
 };
+
+// The user can choose which APIs to use, and it multiplies these amounts
+var amounts = {};
+for (var i in defaultAmounts) amounts[i] = defaultAmounts[i];
+
+// load prefered service list, or default to all
+var services = [];
+setServices(((window.sessionStorage && sessionStorage.mustachedBearServices) ||
+  (window.localStorage && localStorage.mustachedBearServices) ||
+    'etsy tumblr parsely bitly foursquare exfm').split(' '));
+
+function setServices(list) {
+  services = list;
+  var listStr = list.join(' ');
+  if (window.localStorage) localStorage.mustachedBearServices = listStr;
+  if (window.sessionStorage) sessionStorage.mustachedBearServices = listStr;
+
+  var sum = 0;
+  for (var service in defaultAmounts) {
+    var has = list.indexOf(service) != -1;
+    var amount = defaultAmounts[service] * has;
+    sum += amount;
+    amounts[service] = amount;
+  }
+  var scale = 25 / sum;
+  for (var service in defaultAmounts) {
+    amounts[service] *= scale;
+  }
+}
 
 // get initial search query from URL
 var queryRe = /query=([^&]*)/;
@@ -96,6 +127,7 @@ function loadData() {
 }
 
 function loadNYTData() {
+  if (amounts.nyt < 1) return;
   isLoading++;
   $.ajax({
     url: apiURL,
@@ -109,6 +141,7 @@ function loadNYTData() {
 }
 
 function loadParselyData() {
+  if (amounts.parsely < 1) return;
   isLoading++;
   $.ajax({
     url: parselyAPIURL,
@@ -124,7 +157,7 @@ function loadParselyData() {
 }
 
 function loadEtsyData() {
-  if (!query) {
+  if (!query || amounts.etsy < 1) {
     // etsy requires a query
     return;
   }
@@ -145,6 +178,7 @@ function loadEtsyData() {
 }
 
 function loadTumblrData() {
+  if (amounts.tumblr < 1) return;
   isLoading++;
   $.ajax({
     url: tumblrAPIURL + 'tagged',
@@ -160,6 +194,7 @@ function loadTumblrData() {
 }
 
 function loadBitlyData() {
+  if (amounts.bitly < 1) return;
   isLoading++;
   $.ajax({
     url: bitlyAPIURL + 'search',
@@ -176,6 +211,7 @@ function loadBitlyData() {
 }
 
 function loadFoursquareData() {
+  if (amounts.foursquare < 1) return;
   isLoading++;
   // API does not provide page/offset/ship, so we request 50 results at once
   // and then render them gradually.
@@ -196,7 +232,7 @@ function loadFoursquareData() {
 
 function loadexfmData() {
   // exfm requires a query to search
-  if (!query) return;
+  if (!query || amounts.exfm < 1) return;
   isLoading++;
   // API does not provide page/offset/ship, so we request 50 results at once
   // and then render them gradually.
@@ -397,6 +433,10 @@ $(document).ready(function() {
 
   // Reload results on form submit
   $('form.navbar-form').on('submit', function (e) {
+    if (location.pathname != '/search') {
+      // must allow redirect
+      return;
+    }
     e.preventDefault();
     query = $("#search").val();
     if (history.pushState) {
@@ -407,4 +447,17 @@ $(document).ready(function() {
     clearData();
     loadData();
   });
+
+  // Setup config button
+  $('#config-button').click(function (e) {
+    // Toggle config menu
+    $('#config-menu').slideToggle(250);
+  });
+
+  // Setup config menu with initial services preference and update handler
+  $('#config-menu select').val(services)
+    .change(function (e) {
+      setServices($(this).val());
+    });
+
 });

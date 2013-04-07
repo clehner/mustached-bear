@@ -76,17 +76,10 @@ h1.navbar-title:hover {
 }
 
 /* form */
-.form-container {
-	margin: 0px 0px 0px 0px;
-	padding: 0px 0px 0px 0px;
-	width: 330px;
-	height: 50px;
-	float: right;
-}
-
 .navbar-form {
 	margin: 2px 0px 0px 0px;
 	padding: 0;
+	float: right;
 }
 
 #search::selection {
@@ -136,9 +129,28 @@ h1.navbar-title:hover {
 	vertical-align: top;
 }
 
-#search-button {
+#search-button,
+#config-button {
 	border: 0;
 	background: transparent;
 	margin: 0;
 	padding: 0;
+}
+
+/* Config menu */
+#config-button {
+  font-size: 3em;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: .4em;
+}
+#config-menu {
+  display: none;
+  position: absolute;
+  top: 4em;
+  right: 1em;
+}
+
+#config-menu select {
+	height: 9em;
 }

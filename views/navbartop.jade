@@ -15,12 +15,20 @@ block content
 				.title-container
 					a(href='about')
 						h1.navbar-title Mustached Bear
-				.form-container
-					form.navbar-form
-						input(type='text', name='query', maxlength='35', placeholder=query, autofocus='autofocus')#search
-						button(type='submit')#search-button
-							img(src='images/searchicon.png').searchicon
+				form.navbar-form(action='search', method='get')
+					input(type='text', name='query', maxlength='35', placeholder=query, autofocus='autofocus')#search
+					button(type='submit')#search-button
+						img(src='images/searchicon.png').searchicon
+					button#config-button &#9731;
 			
+			#config-menu
+				select(multiple)
+					option(selected) etsy
+					option(selected) tumblr
+					option(selected) parsely
+					option(selected) bitly
+					option(selected) foursquare
+					option(selected) exfm
 		
 		#main(role='main')
 			block maincontent
