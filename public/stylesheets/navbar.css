@@ -118,3 +118,10 @@ h1.navbar-title:hover {
 	padding: 0;
 	vertical-align: top;
 }
+
+#search-button {
+	border: 0;
+	background: transparent;
+	margin: 0;
+	padding: 0;
+}

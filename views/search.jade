@@ -9,13 +9,15 @@ block content
 		.navbar 
 			.navbar-inner 
 				.img-container
-					img(src='images/bear-icon.png')
+					a(href='/')
+						img(src='images/bear-icon.png')
 				.title-container
 					h1.navbar-title Mustached Bear
 				.form-container
 					form.navbar-form
-						input(type='text', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
-						input(type='image', src='images/searchicon.png').searchicon
+						input(type='text', name='query', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
+						button(type='submit')#search-button
+							img(src='images/searchicon.png').searchicon
 			
 		
 		#main(role='main')

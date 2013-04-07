@@ -87,5 +87,12 @@ body {
 	width: 25px;
 	margin: 11px 0 0 0;
 	padding: 0;
-	vertical-align: top;
+}
+
+#search-button {
+	border: 0;
+	background: transparent;
+	vertical-align: text-bottom;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 10px 0px;
 }
