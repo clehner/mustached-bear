@@ -450,6 +450,7 @@ $(document).ready(function() {
 
   // Setup config button
   $('#config-button').click(function (e) {
+    e.preventDefault();
     // Toggle config menu
     $('#config-menu').slideToggle(250);
   });
