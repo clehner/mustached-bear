@@ -13,9 +13,20 @@ body {
 }
 
 body {
-  font-family: Vollkorn, Helvetica, Arial, sans-serif;
+	font-family: Vollkorn, Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+	color: #00B7FF;
+}
+
+.about-container {
+	color: white;
+	margin: 0% 10% 0% 10%;
+	text-align: justify;
+	font-size: 20px;
+}
+
+.about-container h2 {
+	font-size: 30px;
 }

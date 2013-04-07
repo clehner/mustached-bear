@@ -1,0 +1,32 @@
+extends layout
+
+block head
+	link(rel='stylesheet', href='stylesheets/navbar.css')
+	link(rel='stylesheet', href='wookmark/custom/gridblockstyle.css')
+
+block content
+	#container
+		.navbar 
+			.navbar-inner 
+				.img-container
+					a(href='/')
+						img(src='images/bear-icon.png')
+				.title-container
+					h1.navbar-title Mustached Bear
+				.form-container
+					form.navbar-form
+						input(type='text', name='query', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
+						button(type='submit')#search-button
+							img(src='images/searchicon.png').searchicon
+			
+		
+		#main(role='main')
+			block maincontent
+		
+	script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+	script(src='wookmark/jquery.wookmark.min.js')
+	script(src='wookmark/custom/loadlogic.js')
+	script
+		if (!("autofocus" in document.createElement('search'))) {
+			document.getElementById('search').focus();
+		}

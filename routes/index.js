@@ -4,12 +4,17 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'mustached-bear' });
+  res.render('index', {});
+};
+
+exports.about = function(req, res){
+  res.render('about', {
+    query: req.query.query
+  });
 };
 
 exports.search = function(req, res){
   res.render('search', {
-    title: 'mustached-bear',
     query: req.query.query
   });
 };
