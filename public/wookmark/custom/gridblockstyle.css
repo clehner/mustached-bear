@@ -23,13 +23,16 @@ margin: 0;
 	cursor: pointer;
 }
 
+#tiles a {
+  text-decoration: none;
+}
+
 #tiles li img {
 	display: block;
 	margin: 10px 10px 10px 10px;
 }
 
 #tiles li .overflow {
-	height: 200px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	margin: 10px 10px 10px 10px;
@@ -61,5 +64,5 @@ margin: 0;
 	width: 16px;
 	height: 16px;
 	margin: 0 auto;
-	background-image: url('../images/loader.gif');
+	background-image: url('../example-api/images/loader.gif');
 }

@@ -1,7 +1,8 @@
     var handler = null;
-    var page = 1;
+    var page = 0;
     var isLoading = false;
-    var apiURL = 'http://www.wookmark.com/api/json/popular'
+    var apiURL = '/result';
+    var query = '';
 
     // Prepare layout options.
     var options = {
@@ -23,7 +24,7 @@
           loadData();
         }
       }
-    };
+    }
 
     /**
      * Refreshes the layout.
@@ -32,7 +33,15 @@
       // Create a new layout handler.
       handler = $('#tiles li');
       handler.wookmark(options);
-    };
+    }
+
+    /**
+     * Clear the rendered data
+     */
+    function clearData() {
+      page = 0;
+      $('#tiles').empty();
+    }
 
     /**
      * Loads data from the API.
@@ -43,11 +52,14 @@
 
       $.ajax({
         url: apiURL,
-        dataType: 'jsonp',
-        data: {page: page}, // Page parameter to make sure we load new data
+        dataType: 'json',
+        data: {
+          query: query,
+          page: page
+        }, // Page parameter to make sure we load new data
         success: onLoadData
       });
-    };
+    }
 
     /**
      * Receives data from the API, creates HTML for images and updates the layout
@@ -60,42 +72,55 @@
       page++;
 
       // Create HTML for the images.
-      var html = '';
       var i=0, length=data.length, gridblock;
       for(; i<length; i++) {
         gridblock = data[i];
-        html += '<li>';
-		
-		
-		if (gridblock.image) {
-			html += '<img src="'+gridblock.image+'" width="280" height="'+Math.round(gridblock.height/gridblock.width*280)+'">';
-		}
-		
-		/*
-		if (gridblock.title) {
-			//html += '<h2>'+gridblock.title+'</h2>';
-			html += '<h2>This is a very long title so it better fit or else too bad</h2>';
-		}
-		
-		if (gridblock.text) {
-			//html += '<p>'+gridblock.text+'</p>';
-			html += '<div class="overflow"><p>On a hot day in June 2004, the Pashtun tribesman was lounging inside a mud compound in South Waziristan, speaking by satellite phone to one of the many reporters who regularly interviewed him on how he had fought and humbled Pakistan\'s army in the country\'s western mountains. He asked one of his followers about the strange, metallic bird hovering above him. Less than 24 hours later, a missile tore through the compound, severing Mr. Muhammad\'s left leg and killing him and several others, including two boys, ages 10 and 16. A Pakistani military spokesman was quick to claim responsibility for the attack, saying that Pakistani forces had fired at the compound. That was a lie. <BR><BR>Mr. Muhammad and his followers had been killed by the C.I.A., the first time it had deployed a Predator drone in Pakistan to carry out a \"targeted killing.\" The target was not a top operative of Al Qaeda, but a Pakistani ally of the Taliban who led a tribal rebellion and was marked by Pakistan as an enemy of the state. In a secret deal, the C.I.A. had agreed to kill him in exchange for access to airspace it had long sought so it could use drones to hunt down its own enemies.</p></div></div>';
-		}*/
-			
-        html += '</li>';
-      }
+        var li = $('<li/>');
+        var a = $('<a/>');
+        a.attr('href', gridblock.url);
+        li.append(a);
 
-      // Add image HTML to the page.
-      $('#tiles').append(html);
+        if (gridblock.image) {
+          var img = new Image();
+          img.src = gridblock.image;
+          img.width = 280;
+          img.height = Math.round(gridblock.height/gridblock.width*280);
+          a.append(img);
+        }
+
+        if (gridblock.title) {
+          var h2 = $('<h2/>').html(gridblock.title);
+          a.append(h2);
+        }
+
+        if (gridblock.text) {
+          var p = $('<p/>');
+          p.html(gridblock.text);
+          var div = $('<div class="overflow"/>');
+          div.append(p);
+          a.append(div);
+        }
+
+        // Add image HTML to the page.
+        $('#tiles').append(li);
+      }
 
       // Apply layout.
       applyLayout();
-    };
+    }
 
-    $(document).ready(new function() {
+    $(document).ready(function() {
       // Capture scroll event.
       $(document).bind('scroll', onScroll);
 
       // Load first data from the API.
       loadData();
+
+      // Reload results on form submit
+      $('form.navbar-form').on('submit', function (e) {
+        e.preventDefault();
+        query = $("#search").val();
+        clearData();
+        loadData();
+      });
     });
