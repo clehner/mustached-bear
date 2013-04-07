@@ -72,6 +72,10 @@ h1.navbar-title:hover {
 	padding: 0;
 }
 
+#search::selection {
+	background:#80441F;
+}
+
 #search {
 	background-color: transparent;
 	height: 30px;
