@@ -10,11 +10,12 @@ block content
 		.text-container
 			h1 Read the news with Mustached Bear.
 		.search-container
-			form.navbar-form
-				input(type='text', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
+			form.navbar-form(action='search', method='get')
+				input(type='text', name='query', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
 				input(type='image', src='images/searchicon.png').searchicon
 
 	script
 		if (!("autofocus" in document.createElement('search'))) {
 			document.getElementById('search').focus();
 		}
+		

@@ -4,8 +4,25 @@ var isLoading = 0;
 var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
 var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
-var query = '';
+var etsyAPIURL = 'http://openapi.etsy.com/v2/';
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
+
+// get initial search query from URL
+var queryRe = /query=([^&]*)/;
+var query = (location.hash.match(queryRe) ||
+  location.search.match(queryRe) || 0)[1];
+
+if(history.pushState) {
+  history.pushState({query: query}, document.title, location.href);
+
+  window.onpopstate = function (e) {
+    if (e.state) {
+      query = e.state.query;
+      clearData();
+      loadData();
+    }
+  };
+}
 
 // Prepare layout options.
 var options = {
@@ -50,9 +67,16 @@ function clearData() {
   * Loads data from the API.
   */
 function loadData() {
-  isLoading++;
-  $('#loaderCircle').show();
+  loadNYTData();
+  loadParselyData();
+  loadEtsyData();
+  page++;
 
+  if (isLoading) $('#loaderCircle').show();
+}
+
+function loadNYTData() {
+  isLoading++;
   $.ajax({
     url: apiURL,
     dataType: 'json',
@@ -60,9 +84,11 @@ function loadData() {
       query: query,
       page: page
     },
-    success: onLoadData
+    success: onLoadNYTData
   });
+}
 
+function loadParselyData() {
   isLoading++;
   $.ajax({
     url: parselyAPIURL,
@@ -70,26 +96,46 @@ function loadData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
+      limit: 5,
       page: page+1
     },
-    success: onLoadData2
+    success: onLoadParselyData
   });
+}
 
+function loadEtsyData() {
+  if (!query) {
+    // etsy requires a query
+    return;
+  }
+  isLoading++;
+  $.ajax({
+    url: etsyAPIURL + 'listings/active.js',
+    dataType: 'jsonp',
+    data: {
+      api_key: 'eyrvku6gczxoorsxjzwohe45',
+      keywords: query,
+      fields: 'listing_id,title,url',
+      includes: 'Images',
+      offset: page * 5,
+      limit: 5
+    },
+    success: onLoadEtsyData
+  });
 }
 
 /**
   * Receives data from an API
   */
-function onLoadData(data) {
+function onLoadNYTData(data) {
   // Increment page index for future calls.
-  page++;
   addItems(data);
 }
 
 /**
   * Receives data from parsely API
   */
-function onLoadData2(data) {
+function onLoadParselyData(data) {
   var items = data.data.map(function (doc) {
     // sometimes the JSON is fail, so use a regex to get the image url
     var image = doc.image_url;
@@ -98,34 +144,29 @@ function onLoadData2(data) {
       image = matches && JSON.parse(matches[1]);
     }
     return {
-      id: doc.pub_date,
+      id: doc.url,
       url: doc.url,
       title: doc.title,
       image: image
     };
   });
-  var urls = items.map(function (item) { return item.image || item.url; });
-
-  // Get thumbmail urls using embedly
-  /*
-  $.ajax({
-    url: oEmbedAPIURL + '?maxwidth=280&urls=' + urls.map(escape).join(','),
-    dataType: 'jsonp',
-    success: function (embeds) {
-      embeds.forEach(function (embed, i) {
-        var item = items[i];
-        item.image = embed.thumbnail_url;
-        item.width = embed.thumbnail_width;
-        item.height = embed.thumbnail_height;
-      });
-      addItems(items);
-    }
-  });
-  */
   addItems(items);
 }
 
-
+function onLoadEtsyData(data) {
+  var items = data.results.map(function (listing) {
+    var img = listing && listing.Images && listing.Images[0];
+    return {
+      id: listing.listing_id,
+      title: listing.title,
+      url: listing.url,
+      image: img.url_570xN,
+      width: img.full_width,
+      height: img.full_height
+    };
+  });
+  addItems(items);
+}
 /**
   * Receives data from some API, creates HTML for images and updates the layout
   */
@@ -195,6 +236,11 @@ $(document).ready(function() {
   $('form.navbar-form').on('submit', function (e) {
     e.preventDefault();
     query = $("#search").val();
+    if (history.pushState) {
+      var newLocation = location.href.replace(queryRe,
+        'query=' + encodeURIComponent(query));
+      history.pushState({query: query}, document.title, newLocation);
+    }
     clearData();
     loadData();
   });
