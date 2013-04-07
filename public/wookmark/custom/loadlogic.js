@@ -26,7 +26,7 @@ var defaultAmounts = {
 
 // The user can choose which APIs to use, and it multiplies these amounts
 var amounts = {};
-for (var i in defaultAmounts) amounts[i] = defaultAmounts[i];
+for (var i in defaultAmounts) amounts[i] = ~~defaultAmounts[i];
 
 // load prefered service list, or default to all
 var services = [];
@@ -45,11 +45,11 @@ function setServices(list) {
     var has = list.indexOf(service) != -1;
     var amount = defaultAmounts[service] * has;
     sum += amount;
-    amounts[service] = amount;
+    amounts[service] = Math.round(amount);
   }
-  var scale = 25 / sum;
+  var scale = 20 / sum;
   for (var service in defaultAmounts) {
-    amounts[service] *= scale;
+    amounts[service] = Math.round(amounts[service] * scale);
   }
 }
 
