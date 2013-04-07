@@ -5,6 +5,9 @@ var apiURL = '/result';
 var parselyAPIURL = 'http://hack.parsely.com/hackapi/search';
 var oEmbedAPIURL = 'http://api.embed.ly/1/oembed';
 var etsyAPIURL = 'http://openapi.etsy.com/v2/';
+var tumblrAPIURL = 'http://api.tumblr.com/v2/';
+var tumblrBeforeTimestamp = 0;
+
 var imageUrlRe = /"image_url":(".*(?:\/\/)*")/;
 
 // get initial search query from URL
@@ -60,6 +63,7 @@ function applyLayout() {
   */
 function clearData() {
   page = 0;
+  tumblrBeforeTimestamp = 0;
   $('#tiles').empty();
 }
 
@@ -70,6 +74,7 @@ function loadData() {
   loadNYTData();
   loadParselyData();
   loadEtsyData();
+  loadTumblrData();
   page++;
 
   if (isLoading) $('#loaderCircle').show();
@@ -96,7 +101,7 @@ function loadParselyData() {
     data: {
       apikey: 'arstechnica.com',
       q: query,
-      limit: 5,
+      limit: 3,
       page: page+1
     },
     success: onLoadParselyData
@@ -121,6 +126,21 @@ function loadEtsyData() {
       limit: 5
     },
     success: onLoadEtsyData
+  });
+}
+
+function loadTumblrData() {
+  isLoading++;
+  $.ajax({
+    url: tumblrAPIURL + 'tagged',
+    dataType: 'jsonp',
+    data: {
+      api_key: 'zugEBprGJG0o3XRNDfZkVmaOYO3pLNtiOkiEmHncixdHrFdAFu',
+      tag: query,
+      limit: 5,
+      before: tumblrBeforeTimestamp
+    },
+    success: onLoadTumblrData
   });
 }
 
@@ -167,6 +187,42 @@ function onLoadEtsyData(data) {
   });
   addItems(items);
 }
+
+/**
+  * Receives data from an API
+  */
+function onLoadTumblrData(data) {
+  if (!data || !data.meta || data.meta.msg != 'OK') {
+    addItems([]);
+    return;
+  }
+
+  var items = data.response.map(function (post) {
+    var img;
+    if (post.photos) {
+      var alts = post.photos[0].alt_sizes;
+      img = alts[alts.length-4] || alts[0];
+    } else {
+      img = {url: post.image_permalink};
+    }
+    return {
+      id: post.id,
+      title: post.title,
+      url: post.post_url,
+      text: post.tags.join(', '),
+      image: img.url,
+      width: img.width,
+      height: img.height,
+      timestamp: post.timestamp
+    };
+  });
+
+  // update timestamp for pagination
+  if (items.length) tumblrBeforeTimestamp = items[items.length-1].timestamp;
+  // add items
+  addItems(items);
+}
+
 /**
   * Receives data from some API, creates HTML for images and updates the layout
   */
