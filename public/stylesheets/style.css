@@ -18,7 +18,20 @@ body {
 
 a {
 	color: #00B7FF;
+	text-decoration: none;
 }
+
+a:active{
+	color: #00B7FF;
+	text-decoration: none;
+}
+
+a:hover{
+	color: #00B7FF;
+	text-decoration: none;
+}
+
+
 
 .about-container {
 	color: white;
@@ -28,5 +41,10 @@ a {
 }
 
 .about-container h2 {
-	font-size: 30px;
+	font-size: 40px;
+	margin-top: 0;
+}
+
+hr {
+	margin: 40px 0px 20px 0px;
 }

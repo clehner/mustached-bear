@@ -2,21 +2,55 @@ extends layout
 
 block head
 	link(rel='stylesheet', href='stylesheets/landingpage.css')
+	script(src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
 
 block content
 	#container
 		.top-container
-			img(src='images/mustache-large.png', width='80%')
+			a(href='about')
+				img(src='images/mustache-large.png', width='80%')
 		.text-container
 			h1 Read the news with Mustached Bear.
 		.search-container
 			form.navbar-form(action='search', method='get')
-				input(type='text', name='query', maxlength='35', placeholder='Type to search', autofocus='autofocus')#search
+				input(type='text', name='query', maxlength='35', placeholder='', autofocus='autofocus')#search
 				button(type='submit')#search-button
 					img(src='images/searchicon.png').searchicon
-
+		
 	script
 		if (!("autofocus" in document.createElement('search'))) {
 			document.getElementById('search').focus();
 		}
 		
+		$(document).ready(function(){
+			var userTyped = 0;
+			var curr = $('#search').attr('placeholder');
+			var placeholderText = 'Angry Bears';
+			
+			function changeField() {
+				if (userTyped == 0 && placeholderText) {
+					$('#search').attr('placeholder', curr += placeholderText[0]);
+					placeholderText = placeholderText.substr(1,placeholderText.length);
+				}
+			}
+			window.setInterval(changeField, 200);
+			
+			$('#search').click(
+				function() {
+					userTyped = 1;
+					$('#search').attr('placeholder', 'Type to search');
+				});
+				
+			$('#search').keydown(
+				function() {
+					userTyped = 1;
+					$('#search').attr('placeholder', 'Type to search');
+				});
+			
+		});
+		
+		$('.navbar-form').submit(function() {
+			if ($('#search').attr('placeholder') != 'Type to search' && !($('#search').val())) {
+				$('#search').val($('#search').attr('placeholder'));
+			}
+		});

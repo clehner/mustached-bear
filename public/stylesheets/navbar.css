@@ -20,7 +20,7 @@
 	width: 50px;
 	height: 50px;
 	margin: 0;
-	padding: 0;
+	padding: 0px;
 }
 
 .img-container img {
@@ -28,6 +28,24 @@
 	width: 35px;
 	margin: 0;
 	padding: 7px;
+}
+
+/*MORPH*/
+.morph {
+  -webkit-transition: all 1.5s ease;
+     -moz-transition: all 1.5s ease;
+       -o-transition: all 1.5s ease;
+      -ms-transition: all 1.5s ease;
+          transition: all 1.5s ease;
+}
+ 
+.morph:hover {
+  border-radius: 50%;
+  -webkit-transform: rotate(360deg);
+     -moz-transform: rotate(360deg);
+       -o-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+          transform: rotate(360deg);
 }
 
 /* title */
@@ -53,7 +71,6 @@ h1.navbar-title {
 
 h1.navbar-title:hover {
 	color: black;
-	cursor: default;
 	font-size: 37px;
 	margin: -1px 0px 0px -2px;
 }
